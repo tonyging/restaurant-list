@@ -10,7 +10,16 @@ app.set('views', './views')
 app.use(express.static('public'))
 
 app.get('/', (req, res) => {
-    res.render('index', { restaurantList: restaurantList })
+    const keyword = req.query.keyword?.trim()
+    const matchedRestaurant = keyword ? restaurantList.filter((mv) =>
+        Object.values(mv).some((property) => {
+            if (typeof property === 'string') {
+                return property.toLowerCase().includes(keyword.toLowerCase())
+            }
+            return false
+        })
+    ) : restaurantList
+    res.render('index', { restaurantList: matchedRestaurant, keyword })
 })
 
 app.get('/restaurants/:id', (req, res) => {
